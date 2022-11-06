@@ -40,67 +40,73 @@
 > age: Int32
 > tags : [String]
 
-##### Коллекция jobs
+### Условия тестирования
 
-> \_id: ObjectId
-> name: String
+> В таблице users более 100 000 записей
 
 ##### Список пользователей по имени Ivan
 
-db.users.aggregate([{
-$match: {
-first_name: "Ivan"
-}
-}]);
-Без индекирования 019 ms
+```mongodb
+db.users.createIndex( { first_name: 1 } );
+db.users.aggregate([
+    {
+        $match: {
+            first_name: "Ivan"
+        }
+    }
+]);
+```
+
+Без индекирования 065 ms
+С индексированием 027 ms
 
 ##### Сумма возрастов пользователей по имени Ivan
 
+```mongodb
+db.users.createIndexes([{"first_name" : 1}, {"age": 1}])
 db.users.aggregate([
-{
-$match: {
-first_name: "Ivan"
-}
-},
-{
-$group: { _id: "$first_name", total: { $sum: "$age" }}
-}
-]
-);
+    {
+        $match: {
+            first_name: "Ivan"
+        }
+    },
+    {
+        $group: { _id: "$first_name", total: { $sum: "$age" }}
+    }
+]);
+```
+
+Без индекирования 081 ms
+С индексированием 023 ms
 
 ##### Пользователи с тегом только A
 
+```mongodb
+db.users.createIndex( { tags: 1 } );
 db.users.aggregate([
-{
-$match: {
-tags: ["A"]
-}
-},
+    {
+        $match: {
+            tags: ["A"]
+        }
+    },
+]);
+```
 
-    ]
-
-);
+Без индекирования 068 ms
+С индексированием 024 ms
 
 ##### Пользователи с тегом A на первом уровне вложенности
 
+```mongodb
+db.users.createIndex( { tags: 1 } );
 db.users.aggregate([
-{
-$match: {
-tags: "A"
-}
-},
-
-    ]
-
-);
-
-##### Пользователи с подробным данными о работе
-
-db.users.aggregate([
-{ $lookup:{
-from: "jobs",
-localField: "job",
-foreignField: "_id",
-as: "job"
-} }
+    {
+        $match: {
+            tags: "A"
+        }
+    }
 ]);
+```
+
+Без индекирования 066 ms
+С индексированием 023 ms
