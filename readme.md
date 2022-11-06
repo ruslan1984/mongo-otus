@@ -30,14 +30,14 @@
 
 > otus
 
-##### Коллекция users
+### Коллекция users
 
-> \_id: ObjectId
-> first_name: String
-> last_name: String
-> job: ObjectId
-> status: String
-> age: Int32
+> \_id: ObjectId\
+> first_name: String\
+> last_name: String\
+> job: ObjectId\
+> status: String\
+> age: Int32\
 > tags : [String]
 
 ### Условия тестирования
