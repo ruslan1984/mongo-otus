@@ -1,11 +1,12 @@
-#Домашняя работа 6
+# Домашняя работа 6
 
 Внешний IP: 158.160.34.42 (Прерываемый)
 
-###Установка mongo
+### Установка mongo
+
 wget -qO - https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add - && echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list && sudo apt-get update && sudo apt-get install -y mongodb-org
 
-###Создадим репликасет с конфигурацией шарда
+### Создадим репликасет с конфигурацией шарда
 
 ```
 sudo mkdir /home/mongo && sudo mkdir /home/mongo/{dbc1,dbc2,dbc3} && sudo chmod 777 /home/mongo/{dbc1,dbc2,dbc3}
@@ -17,7 +18,8 @@ mongod --configsvr --dbpath /home/mongo/dbc2 --port 27002 --replSet RScfg --fork
 mongod --configsvr --dbpath /home/mongo/dbc3 --port 27003 --replSet RScfg --fork --logpath /home/mongo/dbc3/dbc3.log --pidfilepath /home/mongo/dbc3/dbc3.pid
 ```
 
-###посмотрим, что процессу успешно запущены
+### посмотрим, что процессу успешно запущены
+
 ps aux | grep mongo| grep -Ev "grep"
 
 ![image](img/img1.png)
@@ -27,7 +29,7 @@ mongo --port 27001
 rs.initiate({"\_id" : "RScfg", configsvr: true, members : [{"_id" : 0, priority : 3, host : "127.0.0.1:27001"},{"_id" : 1, host : "127.0.0.1:27002"},{"_id" : 2, host : "127.0.0.1:27003"}]});
 ```
 
-###Создадим 3 репликасета
+### Создадим 3 репликасета
 
 ```
 sudo sudo mkdir /home/mongo/{db1,db2,db3,db4,db5,db6,db7,db8,db9} && sudo chmod 777 /home/mongo/{db1,db2,db3,db4,db5,db6,db7,db8,db9}
@@ -67,7 +69,7 @@ rs.initiate({"\_id" : "RS3", members : [{"_id" : 0, priority : 3, host : "127.0.
 
 ps aux | grep mongo| grep -Ev "grep"
 
-###запускаем в 3 экземплярах для отказоустойчивости
+### Запускаем в 3 экземплярах для отказоустойчивости
 
 ```
 mongos --configdb RScfg/127.0.0.1:27001,127.0.0.1:27002,127.0.0.1:27003 --port 27000 --fork --logpath /home/mongo/dbc1/dbs.log --pidfilepath /home/mongo/dbc1/dbs.pid
